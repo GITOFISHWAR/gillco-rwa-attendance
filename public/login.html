@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Sign In · Gillco RWA Attendance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-hero">
+        <div class="logo"><img src="/assets/logo-md.png" alt="Gillco RWA Logo" /></div>
+        <h1>Gillco RWA</h1>
+        <p>Admin sign-in to manage members & attendance</p>
+        <div class="owner">Owner: Ishwar Singh</div>
+      </div>
+      <div class="auth-body">
+        <form id="loginForm" autocomplete="off">
+          <div class="field">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="admin" required autofocus />
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="••••••••••" required />
+          </div>
+          <div id="loginError" class="alert alert-error hidden"></div>
+          <button type="submit" class="btn btn-primary" style="width:100%; margin-top:4px;">Sign In</button>
+        </form>
+        <div class="auth-foot">
+          <a href="/">← Back to public attendance view</a>
+          <div class="mt-16">App created by <b>Ishwar Singh</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="toast-host" id="toastHost"></div>
+  <script src="/js/app.js"></script>
+  <script src="/js/login.js"></script>
+</body>
+</html>

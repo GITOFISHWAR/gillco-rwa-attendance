@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · Gillco RWA Attendance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/admin.html">
+        <span class="brand-logo"><img src="/assets/logo-sm.png" alt="Gillco RWA Logo" /></span>
+        <span>Gillco RWA <small>Admin Dashboard</small><span class="brand-owner">Owner: Ishwar Singh</span></span>
+      </a>
+      <nav class="nav">
+        <a href="/" target="_blank" rel="noopener">Public View ↗</a>
+        <span class="user-chip" id="navAdmin">
+          <span class="avatar">A</span>
+          <span id="navAdminName">admin</span>
+          <button class="btn btn-sm btn-ghost" id="btnLogout">Sign out</button>
+        </span>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="page-head">
+      <h1>Admin Dashboard</h1>
+      <p>Add members and record daily attendance. Members from the same flat are grouped automatically.</p>
+    </div>
+
+    <div class="tabs">
+      <button class="active" data-tab="members">Members</button>
+      <button data-tab="attendance">Attendance</button>
+      <button data-tab="settings">Settings</button>
+    </div>
+
+    <!-- ===== Members tab ===== -->
+    <section id="tab-members">
+      <div class="members-grid">
+        <div class="card">
+          <div class="card-head"><h2>Add Member</h2></div>
+          <div class="card-body">
+            <form id="memberForm" autocomplete="off">
+              <div class="field">
+                <label for="mName">Member Name</label>
+                <input type="text" id="mName" placeholder="e.g. Ishwar Singh" required />
+              </div>
+              <div class="form-row">
+                <div class="field">
+                  <label for="mAge">Age</label>
+                  <input type="number" id="mAge" min="1" max="120" placeholder="e.g. 35" />
+                </div>
+                <div class="field">
+                  <label for="mFlat">Flat Number</label>
+                  <input type="text" id="mFlat" placeholder="e.g. A-204" required />
+                </div>
+              </div>
+              <div class="alert alert-info">
+                <span>Member ID is auto-generated as <b>MEM + sequence</b>, starting at <span class="code" id="seqHint">YYYYMM01</span>.</span>
+              </div>
+              <div id="memberMsg" class="alert hidden"></div>
+              <button type="submit" class="btn btn-primary" style="width:100%;">Add Member</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="card directory-card">
+          <div class="card-head">
+            <div class="directory-head-row">
+              <div>
+                <h2>Members Directory</h2>
+                <p id="dirCount">0 members</p>
+              </div>
+              <div class="search-box">
+                <span class="ic-search">🔍</span>
+                <input type="text" id="flatSearch" placeholder="Search by flat number…" />
+              </div>
+            </div>
+          </div>
+          <div class="directory-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Member ID</th>
+                  <th>Name</th>
+                  <th>Age</th>
+                  <th>Flat</th>
+                  <th>Onboarded</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="memberTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Attendance tab ===== -->
+    <section id="tab-attendance" class="hidden">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Mark Attendance</h2>
+            <p>Pick a date, then set each member Present or Absent. All blank by default — save when ready.</p>
+          </div>
+          <div class="flex items-center gap-12">
+            <div class="field" style="margin:0;">
+              <input type="date" id="attDate" style="padding:9px 12px;" />
+            </div>
+            <button class="btn btn-ghost btn-sm" id="loadSheet">Load Sheet</button>
+          </div>
+        </div>
+
+        <div class="card-body" style="padding:0;">
+          <div id="markControls" class="flex between items-center" style="padding:14px 22px; border-bottom:1px solid var(--line);">
+            <div class="small muted">Tip: leave a member unset and it won't be counted.</div>
+            <div class="flex gap-8">
+              <button class="btn btn-sm btn-ghost" id="markAllPresent">Mark all Present</button>
+              <button class="btn btn-sm btn-ghost" id="markAllAbsent">Mark all Absent</button>
+              <button class="btn btn-sm btn-ghost" id="clearAll">Clear</button>
+            </div>
+          </div>
+          <div id="markList"></div>
+          <div style="padding:16px 22px; border-top:1px solid var(--line); display:flex; justify-content:flex-end;">
+            <button class="btn btn-primary" id="saveAttendance">Save Attendance</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-24">
+        <div class="card-head">
+          <h2>Recorded Attendance Sheets</h2>
+          <div class="toolbar">
+            <a class="btn btn-sm btn-ghost" id="exportAttendance" href="/api/export/attendance" download>⬇ Export Attendance CSV</a>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Members Marked</th><th>Present</th><th>Absent</th></tr></thead>
+            <tbody id="sheetsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Settings tab ===== -->
+    <section id="tab-settings" class="hidden">
+      <div class="card" style="max-width:560px;">
+        <div class="card-head"><h2>Attendance Threshold</h2></div>
+        <div class="card-body">
+          <p class="muted small" style="margin-bottom:16px;">Set the minimum attendance percentage required per flat. Flats below this value are highlighted red on the public view.</p>
+          <div class="settings-row">
+            <div class="field">
+              <label for="thresholdInput">Minimum Attendance (%)</label>
+              <input type="number" id="thresholdInput" min="0" max="100" step="1" value="70" />
+            </div>
+            <button class="btn btn-primary" id="saveThreshold">Save</button>
+          </div>
+          <div id="thresholdMsg" class="alert hidden" style="margin-top:16px;"></div>
+        </div>
+      </div>
+
+      <div class="card mt-24" style="max-width:560px;">
+        <div class="card-head"><h2>Export Data</h2></div>
+        <div class="card-body">
+          <p class="muted small" style="margin-bottom:16px;">Download member and attendance records as CSV files.</p>
+          <div class="toolbar">
+            <a class="btn btn-ghost" href="/api/export/members" download>⬇ Export Members CSV</a>
+            <a class="btn btn-ghost" href="/api/export/attendance" download>⬇ Export Attendance CSV</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="creator">
+      <span class="av"><img src="/assets/logo-sm.png" alt="Logo" /></span>
+      <span>App created & maintained by <b>Ishwar Singh</b></span>
+    </div>
+    <div class="meta">Gillco RWA Attendance System · Admin Console</div>
+  </footer>
+
+  <!-- Disclaimer modal (first visit) -->
+  <div class="disclaimer-overlay hidden" id="disclaimerOverlay">
+    <div class="disclaimer-card">
+      <div class="disclaimer-head">
+        <span class="badge-warn">Please Read</span>
+        <h2>Disclaimer & Terms of Use</h2>
+      </div>
+      <div class="disclaimer-body">
+        <p>Welcome to the <strong>Gillco RWA Attendance System</strong>. Before you proceed, please read and acknowledge the following terms:</p>
+        <p>This application is provided as a voluntary community tool to help the Residents' Welfare Association record and review member attendance. The software is offered "as is" without any warranty of any kind, express or implied, including but not limited to warranties of data accuracy, availability, or fitness for a particular purpose.</p>
+        <p><strong>The application creator, Ishwar Singh, shall not be held responsible or liable for any loss of data</strong>, records, or information stored in or generated by this system, whether arising from software error, hardware failure, database outage, network issue, accidental deletion, or any other cause. No action, claim, or demand of any nature shall be taken against the creator in connection with the use of, or inability to use, this application.</p>
+        <p>Users are advised to maintain independent backups of important records. Continued use of this system constitutes acceptance of these terms.</p>
+        <div class="disclaimer-check">
+          <input type="checkbox" id="disclaimerAgree" />
+          <label for="disclaimerAgree">I have read and understood the above disclaimer, and I agree to the stated conditions.</label>
+        </div>
+      </div>
+      <div class="disclaimer-foot">
+        <button class="btn btn-primary" id="disclaimerAccept" disabled>I Agree & Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-host" id="toastHost"></div>
+  <script src="/js/app.js"></script>
+  <script src="/js/disclaimer.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>
