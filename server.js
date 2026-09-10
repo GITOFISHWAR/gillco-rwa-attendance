@@ -23,7 +23,7 @@ const { MongoClient } = require("mongodb");
 
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb+srv://gillcorwa:gillcorwaF203@mo.ujybdmp.mongodb.net/?appName=MO";
+  process.env.MONGODB_URI || "mongodb+srv://Vercel-Admin-mo:2pA1jpXFzjEXP5Ef@mo.y3e7rxb.mongodb.net/?retryWrites=true&w=majority";
 const DB_NAME = process.env.DB_NAME || "gillco_rwa";
 const SESSION_SECRET =
   process.env.SESSION_SECRET || crypto.randomBytes(32).toString("hex");
